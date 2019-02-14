@@ -8,19 +8,18 @@ output:
 
 ## Loading and preprocessing the data
 
-```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
-library(dplyr)
-library(ggplot2)
-```
 
-```{r, results='markup', warning=FALSE, message=FALSE}
+
+
+```r
 ## Read csv
 activity <- read.csv("activity.csv")
 ```
 
 
 ## What is mean total number of steps taken per day?
-```{r, results='markup', warning=FALSE, message=FALSE}
+
+```r
 ## Omit missing values
 activity_complete_data <- na.omit(activity)
 ## Steps taken per day
@@ -28,29 +27,41 @@ activity_per_day <- group_by(activity_complete_data, date)
 activity_per_day <- summarize(activity_per_day, steps=sum(steps))
 ## Plot histogram
 qplot(steps, data=activity_per_day, xlab='Total steps per day', ylab='Frequency')
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
 ## Mean and Median
 steps_per_day_mean <- format(mean(activity_per_day$steps), nsmall = 2)
 steps_per_day_median <- format(median(activity_per_day$steps), nsmall = 2)
 ```
-* Mean : `r steps_per_day_mean`
-* Median : `r steps_per_day_median`
+* Mean : 10766.19
+* Median : 10765
 
 
 ## What is the average daily activity pattern?
-```{r, results='markup', warning=FALSE, message=FALSE}
+
+```r
 ## Activity per interval of 5 mins
 activity_per_interval <- group_by(activity_complete_data, interval)
 activity_per_interval <- summarize(activity_per_interval, steps=mean(steps))
 ## plot time series
 ggplot(activity_per_interval, aes(interval, steps)) + geom_line()
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 ## Max steps
 max_steps <- max(activity_per_interval$steps)
 ```
-* Max steps : `r max_steps`
+* Max steps : 206.1698113
 
 
 ## Imputing missing values
-```{r, results='markup', warning=FALSE, message=FALSE}
+
+```r
 ## Total number of rows with NA's
 number_rows_NAs <- nrow(activity)-nrow(activity_complete_data)
 ## Merge activity per interval set with raw set
@@ -63,17 +74,23 @@ activity_per_day_imputed <- group_by(activity_imputed, date)
 activity_per_day_imputed <- summarize(activity_per_day_imputed, steps=sum(steps))
 ## Plot histogram
 qplot(steps, data=activity_per_day_imputed)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+```r
 ## Mean and Median
 steps_per_day_mean_imputed <- format(mean(activity_per_day_imputed$steps), nsmall = 2)
 steps_per_day_median_imputed <- format(median(activity_per_day_imputed$steps), nsmall = 2)
 ```
-* Mean : `r steps_per_day_mean_imputed`
-* Median : `r steps_per_day_median_imputed`
+* Mean : 10766.19
+* Median : 10766.19
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r, results='markup', warning=FALSE, message=FALSE}
-## Use dates and convert them into days
+
+```r
+##
 activity_imputed$dayofweek <- weekdays(as.Date(activity_imputed$date))
 activity_imputed$weekend <-as.factor(activity_imputed$dayofweek=="Saturday"|activity_imputed$dayofweek=="Sunday")
 levels(activity_imputed$weekend) <- c("Weekday", "Weekend")
@@ -92,4 +109,6 @@ avtivity_int <- rbind(activity_per_interval_weekday, activity_per_interval_weeke
 avtivity_int$weekend <- as.factor(avtivity_int$weekend)
 ggplot(avtivity_int, aes(interval, steps)) + geom_line() + facet_grid(weekend ~ .)
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
